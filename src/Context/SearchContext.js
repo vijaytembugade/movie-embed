@@ -2,8 +2,9 @@ import { createContext, useContext, useEffect, useReducer } from "react";
 import { debounce } from "../utils/debounce";
 import { v4 as uuid } from "uuid";
 const SearchContext = createContext();
-// const url = `http://www.omdbapi.com/?apikey=ecd5a6a8&`; // vijaytembugade
-const url = `http://www.omdbapi.com/?apikey=a329ca17&`; // dark
+const url = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&`; // dark
+
+console.log(process.env.REACT_APP_API_KEY);
 
 const SearchProvider = ({ children }) => {
   const initialState = {
