@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useReducer } from "react";
 import { debounce } from "../utils/debounce";
 import { v4 as uuid } from "uuid";
 const SearchContext = createContext();
-const url = `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&`; // dark
+const url = `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&`; // dark
 
 console.log(process.env.REACT_APP_API_KEY);
 
