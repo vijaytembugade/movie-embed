@@ -67,7 +67,7 @@ const SearchProvider = ({ children }) => {
                   title: movieData.Title,
                   releaseDate: movieData.Released,
                   director: movieData.Director,
-                  genres: movieData.Genre,
+                  genres: [...movieData.Genre.split(", ")],
                   rating:
                     movieData.Ratings.find(
                       (item) => item.Source === "Rotten Tomatoes"

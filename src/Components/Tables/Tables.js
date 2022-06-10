@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Pagination, Space, Spin, Table } from "antd";
+import { Pagination, Space, Spin, Table, Tag } from "antd";
 import "./Tables.css";
 import { useSearch } from "../../Context/SearchContext";
 
@@ -31,6 +31,29 @@ const columns = [
     dataIndex: "genres",
     key: "genres",
     width: 200,
+    render: (_, { genres }) => (
+      <>
+        {genres.map((tag) => {
+          let color;
+
+          if (tag === "Action") {
+            color = "red";
+          } else if (tag === "Animation") {
+            color = "blue";
+          } else if (tag.length > 5) {
+            color = "green";
+          } else {
+            color = "purple";
+          }
+
+          return (
+            <Tag color={color} key={tag}>
+              {tag.toUpperCase()}
+            </Tag>
+          );
+        })}
+      </>
+    ),
   },
   {
     title: "Rotten Tomatoes Rating",
