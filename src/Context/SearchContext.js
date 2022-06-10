@@ -68,9 +68,10 @@ const SearchProvider = ({ children }) => {
                   releaseDate: movieData.Released,
                   director: movieData.Director,
                   genres: movieData.Genre,
-                  rating: movieData.Ratings.find(
-                    (item) => item.Source === "Rotten Tomatoes"
-                  )?.Value,
+                  rating:
+                    movieData.Ratings.find(
+                      (item) => item.Source === "Rotten Tomatoes"
+                    )?.Value || "N/A",
                 };
                 return requiredData;
               }

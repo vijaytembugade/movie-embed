@@ -37,7 +37,29 @@ const columns = [
     dataIndex: "rating",
     key: "rating",
     width: 200,
-    sorter: (a, b) => parseInt(a.rating) - parseInt(b.rating),
+    sorter: (a, b) => {
+      if (a.rating === "N/A" || b.rating === "N/A") {
+        if (a.rating === "N/A" && b.rating === "N/A") {
+          a.rating = 0;
+          b.rating = 0;
+          const value = parseInt(a.rating) - parseInt(b.rating);
+          a.rating = "N/A";
+          b.rating = "N/A";
+          return value;
+        } else if (b.rating === "N/A") {
+          b.rating = 0;
+          const value = parseInt(a.rating) - parseInt(b.rating);
+          b.rating = "N/A";
+          return value;
+        } else if (a.rating === "N/A") {
+          a.rating = 0;
+          const value = parseInt(a.rating) - parseInt(b.rating);
+          a.rating = "N/A";
+          return value;
+        }
+      }
+      return parseInt(a.rating) - parseInt(b.rating);
+    },
   },
 ];
 
