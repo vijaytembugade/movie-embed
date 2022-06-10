@@ -9,33 +9,34 @@ const columns = [
     title: "Title",
     dataIndex: "title",
     key: "title",
-    width: 250,
+    width: 200,
+    fixed: "left",
     sorter: (a, b) => a.title.localeCompare(b.title),
   },
   {
     title: "Release Date",
     dataIndex: "releaseDate",
     key: "releaseDate",
-    width: 250,
+    width: 200,
     sorter: (a, b) => Date.parse(a.releaseDate) - Date.parse(b.releaseDate),
   },
   {
     title: "Director",
     dataIndex: "director",
     key: "director",
-    width: 250,
+    width: 200,
   },
   {
     title: "Genres",
     dataIndex: "genres",
     key: "genres",
-    width: 250,
+    width: 200,
   },
   {
     title: "Rotten Tomatoes Rating",
     dataIndex: "rating",
     key: "rating",
-    width: 250,
+    width: 200,
     sorter: (a, b) => parseInt(a.rating) - parseInt(b.rating),
   },
 ];
@@ -65,6 +66,7 @@ const Tables = () => {
           hideOnSinglePage={true}
           showQuickJumper={true}
           showSizeChanger={false}
+          responsive={true}
         />
       </Space>
     </div>

@@ -1,10 +1,14 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react";
 import { debounce } from "../utils/debounce";
 import { v4 as uuid } from "uuid";
 const SearchContext = createContext();
 const url = `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&`; // dark
-
-console.log(process.env.REACT_APP_API_KEY);
 
 const SearchProvider = ({ children }) => {
   const initialState = {
@@ -41,50 +45,55 @@ const SearchProvider = ({ children }) => {
 
   const { page, text, data } = state;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(url + `s=${text}&page=${page}`);
-        const result = await res.json();
-        if (result.Response === "True") {
-          dispatch({ type: "SET_LOADING", payload: true });
-          dispatch({ type: "SET_TOTAL_RESULTS", payload: result.totalResults });
-          if (result.Search.length > 0) {
-            const structuredMovieData = result.Search.map(async (movie) => {
-              async function fetchNewData() {
-                const res = await fetch(url + `i=${movie.imdbID}`);
-                const data = await res.json();
-                return data;
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await fetch(url + `s=${text}&page=${page}`);
+      const result = await res.json();
+      if (result.Response === "True") {
+        dispatch({ type: "SET_LOADING", payload: true });
+        dispatch({ type: "SET_TOTAL_RESULTS", payload: result.totalResults });
+        if (result.Search.length > 0) {
+          (async () => {
+            const structuredMovieData = await result.Search.map(
+              async (movie) => {
+                async function fetchNewData() {
+                  const res = await fetch(url + `i=${movie.imdbID}`);
+                  const data = await res.json();
+                  return data;
+                }
+                const movieData = await fetchNewData();
+                const requiredData = {
+                  key: uuid(),
+                  title: movieData.Title,
+                  releaseDate: movieData.Released,
+                  director: movieData.Director,
+                  genres: movieData.Genre,
+                  rating: movieData.Ratings.find(
+                    (item) => item.Source === "Rotten Tomatoes"
+                  )?.Value,
+                };
+                return requiredData;
               }
-              const movieData = await fetchNewData();
-              const requiredData = {
-                key: uuid(),
-                title: movieData.Title,
-                releaseDate: movieData.Released,
-                director: movieData.Director,
-                genres: movieData.Genre,
-                rating: movieData.Ratings.find(
-                  (item) => item.Source === "Rotten Tomatoes"
-                )?.Value,
-              };
-              return requiredData;
-            });
-            (async () => {
-              const requiredData = await Promise.all(structuredMovieData);
-              dispatch({ type: "SET_DATA", payload: requiredData });
-              dispatch({ type: "SET_LOADING", payload: false });
-            })();
-          }
-        } else {
-          throw new Error("Result is not avaialble");
+            );
+            const requiredData = await Promise.all(structuredMovieData);
+            dispatch({ type: "SET_DATA", payload: requiredData });
+            dispatch({ type: "SET_LOADING", payload: false });
+          })();
         }
-      } catch (err) {
-        dispatch({ type: "SET_DATA", payload: [] });
-        dispatch({ type: "SET_LOADING", payload: false });
+      } else if (result.Response === "False") {
+        if (result.Response.Error) {
+          throw new Error("Moview Not Found");
+        }
       }
-    };
+    } catch (err) {
+      dispatch({ type: "SET_DATA", payload: [] });
+      dispatch({ type: "SET_LOADING", payload: false });
+    }
+  }, [text, page]);
+
+  useEffect(() => {
     fetchData();
-  }, [page, text]);
+  }, [fetchData]);
 
   function searchDispatch(text) {
     return dispatch({ type: "SET_TEXT", payload: text });
@@ -108,9 +117,12 @@ const SearchProvider = ({ children }) => {
       );
 
       dispatch({ type: "SET_DATA", payload: filterData });
+    } else {
+      fetchData();
     }
   };
 
+  console.log(state);
   return (
     <SearchContext.Provider
       value={{
