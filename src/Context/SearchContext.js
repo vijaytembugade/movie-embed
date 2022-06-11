@@ -7,6 +7,7 @@ import {
 } from "react";
 import { debounce } from "../utils/debounce";
 import { v4 as uuid } from "uuid";
+import { openNotification } from "../utils/notification";
 const SearchContext = createContext();
 const url = `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&`; // dark
 
@@ -82,11 +83,12 @@ const SearchProvider = ({ children }) => {
           })();
         }
       } else if (result.Response === "False") {
-        if (result.Response.Error) {
-          throw new Error("Moview Not Found");
+        if (result.Error === "Movie not found!") {
+          throw new Error(result.Error);
         }
       }
     } catch (err) {
+      openNotification({ message: err.message });
       dispatch({ type: "SET_DATA", payload: [] });
       dispatch({ type: "SET_LOADING", payload: false });
     }
@@ -123,7 +125,6 @@ const SearchProvider = ({ children }) => {
     }
   };
 
-  console.log(state);
   return (
     <SearchContext.Provider
       value={{
