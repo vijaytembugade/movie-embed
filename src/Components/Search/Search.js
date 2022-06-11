@@ -11,6 +11,7 @@ const Search = () => {
     <div className="search-component">
       <Input
         size="large"
+        allowClear
         placeholder="Search a movie"
         prefix={<SearchOutlined />}
         onChange={handleSearch}
